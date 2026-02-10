@@ -5,21 +5,32 @@ st.set_page_config(page_title="SBI Banking FAQ Chatbot")
 
 st.title("🏦 SBI Banking FAQ Chatbot")
 
-if "chat" not in st.session_state:
-    st.session_state.chat = []
+# -------------------------
+# Store chat history
+# -------------------------
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-user_input = st.text_input("Ask your question:")
+# -------------------------
+# Display old messages
+# -------------------------
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
-if st.button("Send") and user_input:
+# -------------------------
+# Chat input (AUTO CLEAR)
+# -------------------------
+user_input = st.chat_input("Type your question here...")
+
+if user_input:
+    # show user message
+    st.session_state.messages.append({"role": "user", "content": user_input})
+
+    # get bot reply
     reply = get_bot_response(user_input)
 
-    st.session_state.chat.append(("You", user_input))
-    st.session_state.chat.append(("Bot", reply))
+    # show bot reply
+    st.session_state.messages.append({"role": "assistant", "content": reply})
 
-
-for sender, msg in st.session_state.chat:
-    if sender == "You":
-        st.markdown(f"🔴 **You:** {msg}")
-    else:
-        st.markdown(f"🟢 **Bot:** {msg}")
-
+    st.rerun()
